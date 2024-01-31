@@ -1,4 +1,4 @@
-import java.security.KeyStore;
+
 import java.util.*;
 
 public class P07_HandsOfCards {
@@ -7,67 +7,109 @@ public class P07_HandsOfCards {
         //S -> 4, H-> 3, D -> 2, C -> 1
         //2, 3, 4, 5, 6, 7, 8, 9, 10, J-11, Q-12, K-13, A-14
 
-        Map<String, List<String>> cardsMapList = new HashMap<>();
-        Map<String, Integer> cardsMap = new LinkedHashMap<>();
-
-//        List<String> cardsList = new ArrayList<>();
+        Map<String, Set<String>> cardsMap = new LinkedHashMap<>();
 
         String input = scanner.nextLine();
 
-
-        while(!input.equals("JOKER")) {
+        while (!input.equals("JOKER")) {
             String name = input.split(":")[0];
             String cardsInput = input.split(":")[1].trim();
             String[] cards = cardsInput.split(", ");
 
-            int cardsSum = 0;
+            Set<String> cardsSet = new HashSet<>();
+            cardsSet.addAll(Arrays.asList(cards));
 
-            for (String card : cards) {
-                cardsMapList.putIfAbsent(name, new ArrayList<>());
-                if (!cardsMapList.get(name).contains(card)) {
-                    cardsMapList.get(name).add(card);
-//                    cardsList.add(card);
+            if (!cardsMap.containsKey(name)) {
+                cardsMap.put(name, cardsSet);
+            } else {
+                Set<String> currentCards = cardsMap.get(name);
+                currentCards.addAll(cardsSet);
+                cardsMap.put(name, currentCards);
+            }
 
-                    int power = 0;
-                    int type = 0;
+        input = scanner.nextLine();
+    }
+        cardsMap.entrySet().forEach(entry-> {
+            String name = entry.getKey();
+            Set<String> cards = entry.getValue();
+            int points = getCardsPoints(cards);
+            System.out.printf("%s: %d%n", name, points);
+        });
 
-                    String powerCard = card.split("")[0].trim();
-                    switch (powerCard) {
-                        case "J" -> power = 11;
-                        case "Q" -> power = 12;
-                        case "K" -> power = 13;
-                        case "A" -> power = 14;
-                        case "2" -> power = 2;
-                        case "3" -> power = 3;
-                        case "4" -> power = 4;
-                        case "5" -> power = 5;
-                        case "6" -> power = 6;
-                        case "7" -> power = 7;
-                        case "8" -> power = 8;
-                        case "9" -> power = 9;
-                        case "10" -> power = 10;
-                    }
-                    String typeCard = card.split("")[1];
-                    switch (typeCard) {
-                        case "S" -> type = 4;
-                        case "H" -> type = 3;
-                        case "D" -> type = 2;
-                        case "C" -> type = 1;
-                    }
-                    cardsSum += (power * type);
+    }
+    private static int getCardsPoints(Set<String> cards) {
+        int cardsSum = 0;
+
+        for (String card : cards) {
+            int power = 0;
+            int type = 0;
+
+            String powerCard = card.split("")[0].trim();
+            switch (powerCard) {
+                case "J":
+                    power = 11;
+                    break;
+                case "Q":
+                    power = 12;
+                    break;
+                case "K":
+                    power = 13;
+                    break;
+                case "A":
+                    power = 14;
+                    break;
+                case "2":
+                    power = 2;
+                    break;
+                case "3":
+                    power = 3;
+                    break;
+                case "4":
+                    power = 4;
+                    break;
+                case "5":
+                    power = 5;
+                    break;
+                case "6":
+                    power = 6;
+                    break;
+                case "7":
+                    power = 7;
+                    break;
+                case "8":
+                    power = 8;
+                    break;
+                case "9":
+                    power = 9;
+                    break;
+                case "1":
+                    power = 10;
+                    break;
+            }
+            String typeCard="";
+            if (!powerCard.equals("1")) {
+                 typeCard = card.split("")[1];
+
+            } else {
+                typeCard = card.split("")[2];
+            }
+                switch (typeCard) {
+                    case "S":
+                        type = 4;
+                        break;
+                    case "H":
+                        type = 3;
+                        break;
+                    case "D":
+                        type = 2;
+                        break;
+                    case "C":
+                        type = 1;
+                        break;
                 }
-            }
 
-            if (cardsMap.containsKey(name)) {
-                cardsSum = cardsMap.get(name) + cardsSum;
-            }
-            cardsMap.put(name, cardsSum);
-
-            input = scanner.nextLine();
-            }
-
-        for (Map.Entry mp: cardsMap.entrySet()) {
-            System.out.println(mp.getKey() + ": " + mp.getValue());
+            cardsSum += (power * type);
         }
+        return cardsSum;
     }
 }
